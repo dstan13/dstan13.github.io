@@ -189,7 +189,53 @@
   .footer-text{font-size:12px;color:var(--muted);}
   .footer-link{color:var(--blue);text-decoration:none;}
   .last-updated{font-size:11px;color:var(--muted);margin-top:4px;}
+
+  /* ── LEAGUE DETAIL PAGE ── */
+  #league-page{display:none;}
+  #league-page.active{display:block;animation:fadeUp 0.25s ease;}
+  .back-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted2);cursor:pointer;margin-bottom:20px;background:transparent;border:none;font-family:'Barlow',sans-serif;}
+  .back-btn:hover{color:var(--gold);}
+  .league-detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .league-detail-wide{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px;}
+  .member-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);}
+  .member-row:first-child{border-top:none;}
+  .member-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;}
+  .member-name{flex:1;font-size:14px;font-weight:500;}
+  .member-email{font-size:12px;color:var(--muted);margin-top:1px;}
+  .member-role{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+  .role-owner{background:rgba(240,180,41,0.15);color:var(--gold);}
+  .role-member{background:rgba(156,163,175,0.1);color:var(--muted2);}
+  .role-invited{background:rgba(45,125,210,0.12);color:#60a5fa;}
+  .invite-form{display:flex;gap:8px;margin-top:14px;}
+  .invite-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);font-family:'Barlow',sans-serif;outline:none;}
+  .invite-input:focus{border-color:var(--gold);}
+  .invite-input::placeholder{color:var(--muted);}
+  .btn-invite{background:var(--gold);color:#0a0c10;border:none;border-radius:8px;padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+  .btn-invite:hover{opacity:0.9;}
+  .invite-feedback{font-size:12px;margin-top:8px;min-height:16px;}
+  .invite-ok{color:var(--green);}
+  .invite-err{color:var(--red);}
+  .draft-big{text-align:center;padding:8px 0 16px;}
+  .draft-big-countdown{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;margin:8px 0 4px;}
+  .draft-big-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .draft-detail-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-top:1px solid var(--border);}
+  .draft-detail-label{color:var(--muted);}
+  .draft-detail-val{font-weight:500;}
+  .slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:4px;}
+  .slot-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;}
+  .slot-num{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+  .slot-name{font-size:13px;font-weight:500;color:var(--text);}
+  .slot-name.empty{color:var(--muted);font-style:italic;}
+  .league-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .setting-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+  .setting-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .setting-val{font-size:15px;font-weight:600;color:var(--text);}
+  .danger-zone{margin-top:16px;padding:14px 16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;display:flex;align-items:center;justify-content:space-between;}
+  .danger-label{font-size:13px;color:var(--red);}
+  .btn-danger{background:transparent;border:1px solid rgba(239,68,68,0.4);color:var(--red);border-radius:6px;padding:7px 14px;font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+  .btn-danger:hover{background:rgba(239,68,68,0.1);}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -199,8 +245,8 @@
     <div class="auth-logo">GRID<span>IRON</span></div>
     <div class="auth-sub">Your fantasy football headquarters</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="showAuthTab('login',this)">Sign In</button>
-      <button class="auth-tab" onclick="showAuthTab('register',this)">Create Account</button>
+      <button class="auth-tab active" onclick="window.showAuthTab('login',this)">Sign In</button>
+      <button class="auth-tab" onclick="window.showAuthTab('register',this)">Create Account</button>
     </div>
 
     <!-- LOGIN -->
@@ -209,7 +255,7 @@
         <input type="email" id="login-email" placeholder="Email address" />
         <input type="password" id="login-password" placeholder="Password" />
         <div class="auth-error" id="login-error"></div>
-        <button class="btn-primary" onclick="signIn()">Sign In</button>
+        <button class="btn-primary" onclick="window.signIn()">Sign In</button>
       </div>
     </div>
 
@@ -220,7 +266,7 @@
         <input type="email" id="reg-email" placeholder="Email address" />
         <input type="password" id="reg-password" placeholder="Password (min 6 chars)" />
         <div class="auth-error" id="reg-error"></div>
-        <button class="btn-primary" onclick="registerUser()">Create Account</button>
+        <button class="btn-primary" onclick="window.registerUser()">Create Account</button>
       </div>
     </div>
   </div>
@@ -232,16 +278,16 @@
 <nav>
   <div class="logo">GRID<span>IRON</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('fantasy',this)">Fantasy</button>
-    <button class="nav-tab" onclick="switchTab('pickem',this)">Pick Em</button>
-    <button class="nav-tab" onclick="switchTab('analytics',this)">Analytics</button>
+    <button class="nav-tab active" onclick="window.switchTab('fantasy',this)">Fantasy</button>
+    <button class="nav-tab" onclick="window.switchTab('pickem',this)">Pick Em</button>
+    <button class="nav-tab" onclick="window.switchTab('analytics',this)">Analytics</button>
   </div>
   <div class="nav-right">
     <div class="user-chip">
       <div class="avatar" id="nav-avatar">DS</div>
       <span id="nav-username">dstan13</span>
     </div>
-    <button class="btn-signout" onclick="signOut()">Sign out</button>
+    <button class="btn-signout" onclick="window.signOut()">Sign out</button>
   </div>
 </nav>
 
@@ -255,7 +301,7 @@
   <div class="section">
     <div class="leagues-header">
       <div class="leagues-title">Your Leagues</div>
-      <button class="btn-new-league" onclick="openCreateLeague()">+ New League</button>
+      <button class="btn-new-league" onclick="window.openCreateLeague()">+ New League</button>
     </div>
     <div id="leagues-container">
       <div class="loading-wrap"><div class="spinner"></div><div class="loading-text">Loading your leagues...</div></div>
@@ -339,6 +385,51 @@
   </div>
 </div>
 
+<!-- ══ LEAGUE DETAIL PAGE ══ -->
+<div id="league-page">
+  <div class="hero">
+    <button class="back-btn" onclick="window.closeLeaguePage()" style="margin-bottom:12px;">← Back to leagues</button>
+    <div class="hero-label" id="league-hero-label">Your League</div>
+    <div class="hero-title" id="league-hero-title">League Name</div>
+    <div class="hero-sub" id="league-hero-sub"></div>
+    <div class="hero-stats" id="league-hero-stats"></div>
+  </div>
+  <div class="section">
+    <div class="league-detail-grid">
+      <div class="card">
+        <div class="card-title">Members</div>
+        <div id="members-list"><div class="loading-wrap"><div class="spinner"></div></div></div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;">Invite by email</div>
+          <div class="invite-form">
+            <input class="invite-input" id="invite-email" type="email" placeholder="friend@email.com" />
+            <button class="btn-invite" onclick="window.inviteMember()">Invite</button>
+          </div>
+          <div class="invite-feedback" id="invite-feedback"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Draft Info</div>
+        <div id="draft-detail-content"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">League Settings</div>
+        <div id="league-settings-content"></div>
+        <div class="danger-zone">
+          <div class="danger-label">Delete this league</div>
+          <button class="btn-danger" onclick="window.deleteLeague()">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title">Draft Order <span style="font-size:11px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">— randomized when draft starts</span></div>
+        <div class="slots-grid" id="draft-slots"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-logo">GRIDIRON</div>
   <div>
@@ -415,8 +506,8 @@
 
     <div class="auth-error" id="league-error" style="margin-top:8px;"></div>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeCreateLeague()">Cancel</button>
-      <button class="btn-submit" onclick="createLeague()">Create League</button>
+      <button class="btn-cancel" onclick="window.closeCreateLeague()">Cancel</button>
+      <button class="btn-submit" onclick="window.createLeague()">Create League</button>
     </div>
   </div>
 </div>
@@ -425,7 +516,7 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut as fbSignOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyABz7A_I_LaQYWRMp0bPsolm7D9S2bldKM",
@@ -437,17 +528,20 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// ── EMAILJS INIT ─────────────────────────────────────────
+emailjs.init('kmp8PGhjxCN3hlZUD');
 const auth = getAuth(app);
 const db = getFirestore(app);
+const leagueMap = {};
 
-// ── AUTH STATE ──────────────────────────────────────────
+// ── AUTH STATE ───────────────────────────────────────────
 onAuthStateChanged(auth, user => {
   if (user) {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     const name = user.displayName || user.email.split('@')[0];
-    const initials = name.slice(0,2).toUpperCase();
-    document.getElementById('nav-avatar').textContent = initials;
+    document.getElementById('nav-avatar').textContent = name.slice(0,2).toUpperCase();
     document.getElementById('nav-username').textContent = name;
     loadLeagues(user.uid);
     loadGames();
@@ -458,7 +552,7 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// ── SIGN IN ─────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────────
 window.signIn = async () => {
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-password').value;
@@ -472,7 +566,6 @@ window.signIn = async () => {
   }
 };
 
-// ── REGISTER ────────────────────────────────────────────
 window.registerUser = async () => {
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
@@ -489,88 +582,33 @@ window.registerUser = async () => {
   }
 };
 
-// ── SIGN OUT ────────────────────────────────────────────
 window.signOut = async () => { await fbSignOut(auth); };
 
-// ── LOAD LEAGUES ────────────────────────────────────────
-async function loadLeagues(uid) {
-  const container = document.getElementById('leagues-container');
-  try {
-    const q = query(collection(db, 'leagues'), where('ownerId', '==', uid), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🏈</div>
-          <div class="empty-title">No leagues yet</div>
-          <div class="empty-sub">Create your first league and invite your friends to join.</div>
-          <button class="btn-new-league" onclick="openCreateLeague()">+ Create Your First League</button>
-        </div>`;
-      return;
-    }
-    let html = '<div class="leagues-grid">';
-    snap.forEach(doc => {
-      const l = doc.data();
-      const draftDate = l.draftDate ? new Date(l.draftDate) : null;
-      const now = new Date();
-      const draftPast = draftDate && draftDate < now;
-      const status = draftPast ? 'active' : draftDate ? 'draft' : 'setup';
-      const statusLabel = status === 'active' ? 'Active' : status === 'draft' ? 'Draft Scheduled' : 'Setup';
-      const statusClass = `badge-${status}`;
-      const draftStr = draftDate ? draftDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' at ' + draftDate.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : 'Not scheduled';
+window.showAuthTab = (tab, btn) => {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+};
 
-      // Countdown
-      let countdownHtml = '';
-      if (draftDate && !draftPast) {
-        const diff = draftDate - now;
-        const days = Math.floor(diff / 86400000);
-        const hrs = Math.floor((diff % 86400000) / 3600000);
-        const mins = Math.floor((diff % 3600000) / 60000);
-        countdownHtml = `
-          <div class="draft-schedule-card">
-            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Draft countdown</div>
-            <div class="countdown">${days}d ${hrs}h ${mins}m</div>
-            <div class="countdown-label">until draft starts</div>
-            <div style="margin-top:12px;">
-              <div class="draft-info-row"><span class="draft-info-label">Date</span><span class="draft-info-val">${draftStr}</span></div>
-              <div class="draft-info-row"><span class="draft-info-label">Type</span><span class="draft-info-val">${l.draftType || 'Snake'}</span></div>
-              <div class="draft-info-row"><span class="draft-info-label">Seconds/pick</span><span class="draft-info-val">${l.draftSeconds || 90}s</span></div>
-            </div>
-          </div>`;
-      }
+window.switchTab = (id, btn) => {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+};
 
-      html += `
-        <div class="league-card">
-          <div class="league-card-header">
-            <div class="league-name">${l.name}</div>
-            <span class="league-badge ${statusClass}">${statusLabel}</span>
-          </div>
-          <div class="league-meta">
-            <span>🏆 ${l.teams} teams · ${l.scoring?.toUpperCase() || 'PPR'}</span>
-            <span>👥 ${l.roster || 15} roster spots</span>
-            ${l.prize ? `<span>💰 $${l.prize} prize pool</span>` : ''}
-            <span>📅 Draft: ${draftStr}</span>
-          </div>
-          ${countdownHtml}
-          <div class="league-actions">
-            <button class="btn-sm primary">Manage</button>
-            <button class="btn-sm">Roster</button>
-            <button class="btn-sm">Standings</button>
-          </div>
-        </div>`;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-  } catch(e) {
-    container.innerHTML = `<div class="error-msg">Could not load leagues.<br>${e.message}</div>`;
-  }
-}
+// ── PICK EM ──────────────────────────────────────────────
+window.pick = (gid, team, btn) => {
+  document.getElementById(gid).querySelectorAll('.pick-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(gid).classList.add('picked');
+};
 
-// ── CREATE LEAGUE ───────────────────────────────────────
+// ── LEAGUES ──────────────────────────────────────────────
 window.openCreateLeague = () => {
   document.getElementById('create-league-modal').classList.remove('hidden');
-  // Set default draft date to 2 weeks from now
-  const def = new Date(); def.setDate(def.getDate()+14);
+  const def = new Date(); def.setDate(def.getDate() + 14);
   document.getElementById('draft-date').value = def.toISOString().split('T')[0];
   document.getElementById('draft-time').value = '20:00';
 };
@@ -586,9 +624,9 @@ window.createLeague = async () => {
   const err = document.getElementById('league-error');
   err.textContent = '';
   if (!name) { err.textContent = 'Please enter a league name.'; return; }
-  const draftDateVal = document.getElementById('draft-date').value;
-  const draftTimeVal = document.getElementById('draft-time').value;
-  const draftDate = draftDateVal && draftTimeVal ? new Date(`${draftDateVal}T${draftTimeVal}`) : null;
+  const dv = document.getElementById('draft-date').value;
+  const tv = document.getElementById('draft-time').value;
+  const draftDate = dv && tv ? new Date(dv + 'T' + tv) : null;
   try {
     await addDoc(collection(db, 'leagues'), {
       name,
@@ -601,38 +639,269 @@ window.createLeague = async () => {
       draftSeconds: parseInt(document.getElementById('draft-seconds').value),
       ownerId: user.uid,
       ownerName: user.displayName || user.email,
+      members: [],
       createdAt: serverTimestamp(),
     });
-    closeCreateLeague();
+    window.closeCreateLeague();
     loadLeagues(user.uid);
   } catch(e) {
-    err.textContent = 'Failed to create league: ' + e.message;
+    err.textContent = 'Failed: ' + e.message;
   }
 };
 
-// ── AUTH TABS ───────────────────────────────────────────
-window.showAuthTab = (tab, btn) => {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('auth-login').style.display = tab==='login' ? 'block' : 'none';
-  document.getElementById('auth-register').style.display = tab==='register' ? 'block' : 'none';
-};
+async function loadLeagues(uid) {
+  const container = document.getElementById('leagues-container');
+  try {
+    const q = query(collection(db, 'leagues'), where('ownerId', '==', uid), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏈</div><div class="empty-title">No leagues yet</div><div class="empty-sub">Create your first league and invite your friends.</div><button class="btn-new-league" id="first-league-btn">+ Create Your First League</button></div>';
+      document.getElementById('first-league-btn').addEventListener('click', window.openCreateLeague);
+      return;
+    }
+    container.innerHTML = '<div class="leagues-grid" id="leagues-grid"></div>';
+    const grid = document.getElementById('leagues-grid');
+    snap.forEach(docSnap => {
+      const l = docSnap.data();
+      leagueMap[docSnap.id] = l;
+      const draftDate = l.draftDate ? new Date(l.draftDate) : null;
+      const now = new Date();
+      const draftPast = draftDate && draftDate < now;
+      const status = draftPast ? 'active' : draftDate ? 'draft' : 'setup';
+      const statusLabel = status === 'active' ? 'Active' : status === 'draft' ? 'Draft Scheduled' : 'Setup';
+      const draftStr = draftDate
+        ? draftDate.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) + ' at ' + draftDate.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'})
+        : 'Not scheduled';
 
-// ── TAB SWITCHING ───────────────────────────────────────
-window.switchTab = (id, btn) => {
+      let countdownHtml = '';
+      if (draftDate && !draftPast) {
+        const diff = draftDate - now;
+        const days = Math.floor(diff / 86400000);
+        const hrs = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        countdownHtml = `<div class="draft-schedule-card">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Draft countdown</div>
+          <div class="countdown">${days}d ${hrs}h ${mins}m</div>
+          <div class="countdown-label">until draft starts</div>
+          <div style="margin-top:12px;">
+            <div class="draft-info-row"><span class="draft-info-label">Date</span><span class="draft-info-val">${draftStr}</span></div>
+            <div class="draft-info-row"><span class="draft-info-label">Type</span><span class="draft-info-val">${l.draftType || 'Snake'}</span></div>
+            <div class="draft-info-row"><span class="draft-info-label">Secs/pick</span><span class="draft-info-val">${l.draftSeconds || 90}s</span></div>
+          </div>
+        </div>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'league-card';
+      card.innerHTML = `
+        <div class="league-card-header">
+          <div class="league-name">${l.name}</div>
+          <span class="league-badge badge-${status}">${statusLabel}</span>
+        </div>
+        <div class="league-meta">
+          <span>🏆 ${l.teams} teams · ${(l.scoring||'ppr').toUpperCase()}</span>
+          <span>👥 ${l.roster||15} roster spots</span>
+          ${l.prize ? `<span>💰 $${l.prize} prize pool</span>` : ''}
+          <span>📅 Draft: ${draftStr}</span>
+        </div>
+        ${countdownHtml}
+        <div class="league-actions">
+          <button class="btn-sm primary manage-btn" data-id="${docSnap.id}">Manage</button>
+          <button class="btn-sm">Roster</button>
+          <button class="btn-sm">Standings</button>
+        </div>`;
+      grid.appendChild(card);
+      card.querySelector('.manage-btn').addEventListener('click', () => {
+        openLeaguePage(docSnap.id, l);
+      });
+    });
+  } catch(e) {
+    container.innerHTML = '<div class="error-msg">Could not load leagues.<br>' + e.message + '</div>';
+  }
+}
+
+// ── LEAGUE DETAIL ────────────────────────────────────────
+let currentLeague = null;
+let currentLeagueId = null;
+let countdownInterval = null;
+
+function openLeaguePage(leagueId, leagueData) {
+  currentLeagueId = leagueId;
+  currentLeague = leagueData;
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('league-page').classList.add('active');
+  document.getElementById('league-hero-label').textContent = (leagueData.scoring||'PPR').toUpperCase() + ' · ' + leagueData.teams + ' Teams';
+  document.getElementById('league-hero-title').textContent = leagueData.name;
+  document.getElementById('league-hero-sub').textContent = (leagueData.draftType||'Snake') + ' draft · ' + (leagueData.roster||15) + ' roster spots' + (leagueData.prize ? ' · $' + leagueData.prize + ' prize pool' : '');
+  const members = leagueData.members || [];
+  document.getElementById('league-hero-stats').innerHTML = `
+    <div class="hero-stat"><div class="hero-stat-val">${members.length}</div><div class="hero-stat-label">Members joined</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">${leagueData.teams}</div><div class="hero-stat-label">Total spots</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">${leagueData.teams - members.length}</div><div class="hero-stat-label">Open spots</div></div>
+    ${leagueData.prize ? `<div class="hero-stat"><div class="hero-stat-val">$${leagueData.prize}</div><div class="hero-stat-label">Prize pool</div></div>` : ''}`;
+  renderMembers(members, leagueData.ownerName, leagueData.ownerId);
+  renderDraftInfo(leagueData);
+  renderSettings(leagueData);
+  renderDraftSlots(leagueData.teams, members);
+}
+
+window.closeLeaguePage = () => {
+  document.getElementById('league-page').classList.remove('active');
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+  document.getElementById('fantasy').classList.add('active');
+  document.querySelectorAll('.nav-tab')[0].classList.add('active');
 };
 
-// ── PICK EM ─────────────────────────────────────────────
-window.pick = (gid, team, btn) => {
-  document.getElementById(gid).querySelectorAll('.pick-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  document.getElementById(gid).classList.add('picked');
+function renderMembers(members, ownerName, ownerId) {
+  const colors = ['rgba(45,125,210,0.2)','rgba(34,197,94,0.15)','rgba(240,180,41,0.15)','rgba(239,68,68,0.15)','rgba(156,163,175,0.15)'];
+  const textColors = ['#60a5fa','#4ade80','var(--gold)','#f87171','var(--muted2)'];
+  if (!members.length) {
+    document.getElementById('members-list').innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">No members yet. Invite friends below!</div>';
+    return;
+  }
+  const list = document.getElementById('members-list');
+  list.innerHTML = '';
+  members.forEach((m, i) => {
+    const ci = i % colors.length;
+    const initials = (m.name || m.email || '?').slice(0,2).toUpperCase();
+    const isOwner = m.uid === ownerId;
+    const roleClass = m.status === 'invited' ? 'role-invited' : isOwner ? 'role-owner' : 'role-member';
+    const roleLabel = m.status === 'invited' ? 'Invited' : isOwner ? 'Owner' : 'Member';
+    const row = document.createElement('div');
+    row.className = 'member-row';
+    row.innerHTML = `
+      <div class="member-avatar" style="background:${colors[ci]};color:${textColors[ci]}">${initials}</div>
+      <div style="flex:1;"><div class="member-name">${m.name||'Pending'}</div><div class="member-email">${m.email||''}</div></div>
+      <span class="member-role ${roleClass}">${roleLabel}</span>`;
+    list.appendChild(row);
+  });
+}
+
+function renderDraftInfo(l) {
+  const draftDate = l.draftDate ? new Date(l.draftDate) : null;
+  const now = new Date();
+  const el = document.getElementById('draft-detail-content');
+  el.innerHTML = '';
+  if (draftDate && draftDate > now) {
+    const dateStr = draftDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    const timeStr = draftDate.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    el.innerHTML = `<div style="text-align:center;padding:8px 0 16px;">
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Draft starts in</div>
+      <div class="draft-big-countdown" id="draft-countdown">--</div>
+      <div style="font-size:12px;color:var(--muted2);margin-top:4px;">${dateStr} at ${timeStr}</div>
+    </div>`;
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      const diff = draftDate - new Date();
+      if (diff <= 0) { clearInterval(countdownInterval); return; }
+      const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000),
+            m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+      const cel = document.getElementById('draft-countdown');
+      if (cel) cel.textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }, 1000);
+  } else if (draftDate) {
+    el.innerHTML = '<div style="text-align:center;padding:12px 0 16px;font-size:13px;color:var(--green);">Draft completed</div>';
+  } else {
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;font-size:13px;color:var(--muted);">No draft scheduled yet.</div>';
+  }
+  const dtype = (l.draftType || 'snake');
+  el.innerHTML += `
+    <div class="draft-detail-row"><span class="draft-detail-label">Type</span><span class="draft-detail-val">${dtype.charAt(0).toUpperCase()+dtype.slice(1)}</span></div>
+    <div class="draft-detail-row"><span class="draft-detail-label">Seconds / pick</span><span class="draft-detail-val">${l.draftSeconds||90}s</span></div>
+    <div class="draft-detail-row"><span class="draft-detail-label">Total rounds</span><span class="draft-detail-val">${l.roster||15}</span></div>
+    <div class="draft-detail-row"><span class="draft-detail-label">Total picks</span><span class="draft-detail-val">${(l.teams||10)*(l.roster||15)}</span></div>`;
+}
+
+function renderSettings(l) {
+  const dtype = (l.draftType || 'snake');
+  document.getElementById('league-settings-content').innerHTML = `
+    <div class="league-settings-grid">
+      <div class="setting-item"><div class="setting-label">Teams</div><div class="setting-val">${l.teams}</div></div>
+      <div class="setting-item"><div class="setting-label">Scoring</div><div class="setting-val">${(l.scoring||'ppr').toUpperCase()}</div></div>
+      <div class="setting-item"><div class="setting-label">Roster size</div><div class="setting-val">${l.roster||15}</div></div>
+      <div class="setting-item"><div class="setting-label">Prize pool</div><div class="setting-val">${l.prize?'$'+l.prize:'None'}</div></div>
+      <div class="setting-item"><div class="setting-label">Draft type</div><div class="setting-val">${dtype.charAt(0).toUpperCase()+dtype.slice(1)}</div></div>
+      <div class="setting-item"><div class="setting-label">Commissioner</div><div class="setting-val" style="font-size:13px;">${l.ownerName||'--'}</div></div>
+    </div>`;
+}
+
+function renderDraftSlots(totalTeams, members) {
+  const grid = document.getElementById('draft-slots');
+  grid.innerHTML = '';
+  for (let i = 1; i <= totalTeams; i++) {
+    const m = members[i-1];
+    const slot = document.createElement('div');
+    slot.className = 'slot-card';
+    slot.innerHTML = `<div class="slot-num">Pick #${i}</div><div class="slot-name ${m?'':'empty'}">${m?(m.name||m.email):'Open'}</div>`;
+    grid.appendChild(slot);
+  }
+}
+
+window.inviteMember = async () => {
+  const email = document.getElementById('invite-email').value.trim().toLowerCase();
+  const fb = document.getElementById('invite-feedback');
+  fb.textContent = '';
+  if (!email || !email.includes('@')) { fb.className='invite-feedback invite-err'; fb.textContent='Enter a valid email.'; return; }
+  const members = currentLeague.members || [];
+  if (members.find(m => m.email === email)) { fb.className='invite-feedback invite-err'; fb.textContent='Already in league.'; return; }
+  if (members.length >= currentLeague.teams) { fb.className='invite-feedback invite-err'; fb.textContent='League is full!'; return; }
+
+  // Show sending state
+  fb.className = 'invite-feedback neutral';
+  fb.textContent = 'Sending invite...';
+
+  try {
+    // Save to Firebase first
+    const updated = [...members, {email, name:null, uid:null, status:'invited', invitedAt: new Date().toISOString()}];
+    await updateDoc(doc(db, 'leagues', currentLeagueId), {members: updated});
+    currentLeague.members = updated;
+
+    // Format draft date nicely
+    const draftDate = currentLeague.draftDate
+      ? new Date(currentLeague.draftDate).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'}) + ' at ' + new Date(currentLeague.draftDate).toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})
+      : 'Not yet scheduled';
+
+    // Send invite email via EmailJS
+    await emailjs.send('service_502tp0u', 'template_z7ijklj', {
+      to_email: email,
+      from_name: auth.currentUser.displayName || auth.currentUser.email,
+      league_name: currentLeague.name,
+      league_teams: currentLeague.teams + ' teams',
+      league_scoring: (currentLeague.scoring || 'PPR').toUpperCase(),
+      draft_date: draftDate,
+      site_url: 'https://dstan13.github.io',
+    });
+
+    // Update UI
+    document.getElementById('invite-email').value = '';
+    fb.className = 'invite-feedback invite-ok';
+    fb.textContent = 'Invite sent to ' + email + '!';
+    renderMembers(updated, currentLeague.ownerName, currentLeague.ownerId);
+    renderDraftSlots(currentLeague.teams, updated);
+    setTimeout(() => { fb.textContent = ''; }, 5000);
+  } catch(e) {
+    // If email fails but Firebase saved, still show partial success
+    if (currentLeague.members.find(m => m.email === email)) {
+      fb.className = 'invite-feedback invite-ok';
+      fb.textContent = email + ' added! (Email delivery may be delayed)';
+    } else {
+      fb.className = 'invite-feedback invite-err';
+      fb.textContent = 'Failed: ' + e.message;
+    }
+  }
 };
 
+window.deleteLeague = async () => {
+  if (!confirm('Delete "' + currentLeague.name + '"? This cannot be undone.')) return;
+  try {
+    await deleteDoc(doc(db, 'leagues', currentLeagueId));
+    window.closeLeaguePage();
+    loadLeagues(auth.currentUser.uid);
+  } catch(e) { alert('Could not delete: ' + e.message); }
+};
+
+// ── ESPN ─────────────────────────────────────────────────
 const PROXY = 'https://corsproxy.io/?';
 
 async function loadGames() {
@@ -645,40 +914,68 @@ async function loadGames() {
     const label = `NFL ${year} · Week ${week}`;
     document.getElementById('pickem-week-label').textContent = label;
     document.getElementById('fantasy-week-label').textContent = label;
-    document.getElementById('game-count').textContent = events.length || '—';
+    document.getElementById('game-count').textContent = events.length || '--';
     if (!events.length) {
-      document.getElementById('games-list').innerHTML = '<div class="error-msg">No games this week.<br>Check back when the season is active.</div>';
+      document.getElementById('games-list').innerHTML = '<div class="error-msg">No games this week. Check back when the season is active.</div>';
       return;
     }
-    let html = '';
+    const list = document.getElementById('games-list');
+    list.innerHTML = '';
     events.forEach((ev, i) => {
       const comp = ev.competitions[0];
-      const home = comp.competitors.find(c => c.homeAway==='home');
-      const away = comp.competitors.find(c => c.homeAway==='away');
+      const home = comp.competitors.find(c => c.homeAway === 'home');
+      const away = comp.competitors.find(c => c.homeAway === 'away');
       const state = ev.status?.type?.state;
-      const isFinal = state==='post', isLive = state==='in';
+      const isFinal = state === 'post', isLive = state === 'in';
       const hs = parseInt(home?.score||0), as2 = parseInt(away?.score||0);
-      const homeW = isFinal && hs>as2, awayW = isFinal && as2>hs;
-      const homeAbbr = home?.team?.abbreviation||'?';
-      const awayAbbr = away?.team?.abbreviation||'?';
-      const homeName = home?.team?.shortDisplayName||homeAbbr;
-      const awayName = away?.team?.shortDisplayName||awayAbbr;
+      const homeW = isFinal && hs > as2, awayW = isFinal && as2 > hs;
+      const homeAbbr = home?.team?.abbreviation || '?';
+      const awayAbbr = away?.team?.abbreviation || '?';
+      const homeName = home?.team?.shortDisplayName || homeAbbr;
+      const awayName = away?.team?.shortDisplayName || awayAbbr;
       const d = new Date(ev.date);
       const timeStr = d.toLocaleDateString('en-US',{weekday:'short'}) + '<br>' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-      const statusHtml = isLive ? `<span class="status-badge status-live">Live</span>` : isFinal ? `<span class="status-badge status-final">Final</span>` : `<span class="status-badge status-upcoming">${ev.status?.type?.shortDetail||''}</span>`;
-      const gid = `g${i}`;
-      html += `<div class="game-card${isFinal?' final':''}" id="${gid}">
+      const statusHtml = isLive
+        ? '<span class="status-badge status-live">Live</span>'
+        : isFinal ? '<span class="status-badge status-final">Final</span>'
+        : `<span class="status-badge status-upcoming">${ev.status?.type?.shortDetail||''}</span>`;
+      const gid = 'g' + i;
+      const card = document.createElement('div');
+      card.className = 'game-card' + (isFinal ? ' final' : '');
+      card.id = gid;
+      card.innerHTML = `
         <div class="game-time">${timeStr}</div>
         <div class="game-teams">
-          <div class="game-team-row"><span class="team-abbr">${awayAbbr}</span><span class="team-full">${awayName}</span>${(isLive||isFinal)?`<span class="team-score${awayW?' winning':''}">${away?.score||0}</span>`:''}</div>
+          <div class="game-team-row">
+            <span class="team-abbr">${awayAbbr}</span>
+            <span class="team-full">${awayName}</span>
+            ${(isLive||isFinal) ? `<span class="team-score${awayW?' winning':''}">${away?.score||0}</span>` : ''}
+          </div>
           <div class="divider-line"></div>
-          <div class="game-team-row"><span class="team-abbr">${homeAbbr}</span><span class="team-full">${homeName}</span>${(isLive||isFinal)?`<span class="team-score${homeW?' winning':''}">${home?.score||0}</span>`:''}</div>
+          <div class="game-team-row">
+            <span class="team-abbr">${homeAbbr}</span>
+            <span class="team-full">${homeName}</span>
+            ${(isLive||isFinal) ? `<span class="team-score${homeW?' winning':''}">${home?.score||0}</span>` : ''}
+          </div>
         </div>
-        ${statusHtml}
-        ${!isFinal?`<div class="pick-btns"><button class="pick-btn" onclick="pick('${gid}','${awayAbbr}',this)">${awayAbbr}</button><button class="pick-btn" onclick="pick('${gid}','${homeAbbr}',this)">${homeAbbr}</button></div>`:''}
-      </div>`;
+        ${statusHtml}`;
+      if (!isFinal) {
+        const btns = document.createElement('div');
+        btns.className = 'pick-btns';
+        const btnAway = document.createElement('button');
+        btnAway.className = 'pick-btn';
+        btnAway.textContent = awayAbbr;
+        btnAway.addEventListener('click', () => window.pick(gid, awayAbbr, btnAway));
+        const btnHome = document.createElement('button');
+        btnHome.className = 'pick-btn';
+        btnHome.textContent = homeAbbr;
+        btnHome.addEventListener('click', () => window.pick(gid, homeAbbr, btnHome));
+        btns.appendChild(btnAway);
+        btns.appendChild(btnHome);
+        card.appendChild(btns);
+      }
+      list.appendChild(card);
     });
-    document.getElementById('games-list').innerHTML = html;
     document.getElementById('last-updated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
   } catch(e) {
     document.getElementById('games-list').innerHTML = '<div class="error-msg">Could not load games.</div>';
@@ -688,26 +985,28 @@ async function loadGames() {
 async function loadLeaders() {
   const cats = [{key:'passing',label:'Passing'},{key:'rushing',label:'Rushing'},{key:'receiving',label:'Receiving'}];
   try {
-    const results = await Promise.all(cats.map(c => fetch(PROXY + encodeURIComponent(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/leaders?limit=5&category=${c.key}`)).then(r=>r.json())));
-    let analyticsHtml = '';
+    const results = await Promise.all(cats.map(c =>
+      fetch(PROXY + encodeURIComponent('https://site.api.espn.com/apis/site/v2/sports/football/nfl/leaders?limit=5&category=' + c.key)).then(r => r.json())
+    ));
+    let html = '';
     let hasData = false;
     results.forEach((data, idx) => {
       const cat = cats[idx];
       const leaders = data.leaders?.[0]?.leaders || [];
       if (!leaders.length) return;
       hasData = true;
-      analyticsHtml += `<div class="bar-cat">${cat.label}</div>`;
-      leaders.slice(0,4).forEach((l) => {
-        const name = l.athlete?.displayName || '—';
-        const val = l.displayValue || '—';
-        const maxVals = {passing:450,rushing:200,receiving:180};
-        const numVal = parseFloat(val.replace(/[^0-9.]/g,''))||0;
-        const pct = Math.min(98, Math.round((numVal/(maxVals[cat.key]||300))*100));
-        analyticsHtml += `<div class="bar-row"><div class="bar-name">${name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${val.split('/')[0].trim()}</div></div>`;
+      html += `<div class="bar-cat">${cat.label}</div>`;
+      leaders.slice(0,4).forEach(l => {
+        const name = l.athlete?.displayName || '--';
+        const val = l.displayValue || '--';
+        const maxVals = {passing:450, rushing:200, receiving:180};
+        const numVal = parseFloat(val.replace(/[^0-9.]/g,'')) || 0;
+        const pct = Math.min(98, Math.round((numVal / (maxVals[cat.key]||300)) * 100));
+        html += `<div class="bar-row"><div class="bar-name">${name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${val.split('/')[0].trim()}</div></div>`;
       });
     });
     if (!hasData) { document.getElementById('analytics-scorers').innerHTML = '<div class="error-msg">Stats not available right now.</div>'; return; }
-    document.getElementById('analytics-scorers').innerHTML = analyticsHtml;
+    document.getElementById('analytics-scorers').innerHTML = html;
   } catch(e) {
     document.getElementById('analytics-scorers').innerHTML = '<div class="error-msg">Could not load stats.</div>';
   }
