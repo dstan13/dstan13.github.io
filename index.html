@@ -234,6 +234,41 @@
   .danger-label{font-size:13px;color:var(--red);}
   .btn-danger{background:transparent;border:1px solid rgba(239,68,68,0.4);color:var(--red);border-radius:6px;padding:7px 14px;font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
   .btn-danger:hover{background:rgba(239,68,68,0.1);}
+
+  /* ── LEAGUE HOME PAGE ── */
+  #league-home{display:none;}
+  #league-home.active{display:block;animation:fadeUp 0.25s ease;}
+  .league-home-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+  .standings-card-table{width:100%;border-collapse:collapse;}
+  .standings-card-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 0 10px;text-align:left;}
+  .standings-card-table th:not(:first-child){text-align:right;}
+  .standings-card-table td{padding:10px 0;border-top:1px solid var(--border);font-size:13px;vertical-align:middle;}
+  .standings-card-table td:not(:first-child){text-align:right;}
+  .standing-rank{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--muted);width:24px;display:inline-block;}
+  .standing-name{font-weight:500;}
+  .standing-you{font-size:9px;font-weight:700;letter-spacing:1px;background:var(--gold);color:#0a0c10;padding:1px 5px;border-radius:3px;margin-left:6px;vertical-align:middle;}
+  .standing-w{color:var(--green);font-weight:600;}
+  .standing-l{color:var(--red);}
+  .standing-pts{color:var(--muted2);}
+  .roster-member-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+  .roster-member-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+  .roster-member-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;}
+  .roster-member-name{font-size:14px;font-weight:600;}
+  .roster-member-record{font-size:12px;color:var(--muted2);}
+  .roster-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;}
+  .roster-slot{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;}
+  .roster-slot-pos{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:2px;}
+  .roster-slot-name{font-size:12px;color:var(--muted2);font-style:italic;}
+  .join-banner{background:linear-gradient(135deg,rgba(240,180,41,0.1),rgba(240,180,41,0.05));border:1px solid rgba(240,180,41,0.25);border-radius:10px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .join-banner-text{font-size:14px;color:var(--text);line-height:1.5;}
+  .join-banner-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+  .btn-join-league{background:var(--gold);color:#0a0c10;border:none;border-radius:8px;padding:11px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+  .btn-join-league:hover{opacity:0.9;}
+  .draft-countdown-hero{text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px;}
+  .draft-countdown-big{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:800;color:var(--gold);line-height:1;margin:8px 0 4px;}
+  .draft-countdown-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .draft-countdown-date{font-size:13px;color:var(--muted2);margin-top:8px;}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -430,6 +465,45 @@
   </div>
 </div>
 
+
+<!-- ══ LEAGUE HOME PAGE ══ -->
+<div id="league-home">
+  <div class="hero">
+    <div class="hero-label" id="lh-label">League</div>
+    <button class="back-btn" onclick="window.closeLeagueHome()" style="margin-bottom:12px;">← Back to my leagues</button>
+    <div class="hero-title" id="lh-title">League Name</div>
+    <div class="hero-sub" id="lh-sub"></div>
+    <div class="hero-stats" id="lh-stats"></div>
+  </div>
+  <div class="section">
+    <div id="lh-join-banner"></div>
+    <div class="league-home-grid">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Standings</div>
+          <div id="lh-standings"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Team Rosters <span style="font-size:11px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">— filled after draft</span></div>
+          <div id="lh-rosters"></div>
+        </div>
+      </div>
+      <div>
+        <div class="draft-countdown-hero" id="lh-draft-countdown-wrap">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Draft starts in</div>
+          <div class="draft-countdown-big" id="lh-countdown">--</div>
+          <div class="draft-countdown-label">days · hours · mins · secs</div>
+          <div class="draft-countdown-date" id="lh-draft-date"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">League Info</div>
+          <div id="lh-info"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-logo">GRIDIRON</div>
   <div>
@@ -546,6 +620,8 @@ onAuthStateChanged(auth, user => {
     loadLeagues(user.uid);
     loadGames();
     loadLeaders();
+    // Handle pending join from invite link
+    handlePendingJoin(user);
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -712,7 +788,7 @@ async function loadLeagues(uid) {
         </div>`;
       grid.appendChild(card);
       card.querySelector('.manage-btn').addEventListener('click', () => {
-        openLeaguePage(docSnap.id, l);
+        if (auth.currentUser) openLeagueHome(docSnap.id, l, auth.currentUser);
       });
     });
   } catch(e) {
@@ -870,7 +946,7 @@ window.inviteMember = async () => {
       league_teams: currentLeague.teams + ' teams',
       league_scoring: (currentLeague.scoring || 'PPR').toUpperCase(),
       draft_date: draftDate,
-      site_url: 'https://dstan13.github.io',
+      site_url: 'https://dstan13.github.io?join=' + currentLeagueId,
     });
 
     // Update UI
@@ -1011,6 +1087,182 @@ async function loadLeaders() {
     document.getElementById('analytics-scorers').innerHTML = '<div class="error-msg">Could not load stats.</div>';
   }
 }
+
+// ── JOIN FLOW ─────────────────────────────────────────────
+let pendingJoinId = null;
+let leagueHomeCountdownInterval = null;
+
+// Check URL for ?join=LEAGUE_ID on load
+function checkJoinParam() {
+  const params = new URLSearchParams(window.location.search);
+  const joinId = params.get('join');
+  if (joinId) pendingJoinId = joinId;
+}
+checkJoinParam();
+
+// Called after user signs in/registers - handle pending join
+async function handlePendingJoin(user) {
+  if (!pendingJoinId) return;
+  const leagueId = pendingJoinId;
+  pendingJoinId = null;
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+  try {
+    const leagueSnap = await getDocs(query(collection(db, 'leagues'), where('__name__', '==', leagueId)));
+    if (leagueSnap.empty) {
+      // Try direct doc fetch
+      const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const leagueDoc = await getDoc(doc(db, 'leagues', leagueId));
+      if (!leagueDoc.exists()) { alert('League not found.'); return; }
+      const leagueData = leagueDoc.data();
+      await joinLeague(leagueId, leagueData, user);
+    } else {
+      const leagueDoc = leagueSnap.docs[0];
+      await joinLeague(leagueDoc.id, leagueDoc.data(), user);
+    }
+  } catch(e) {
+    console.error('Join error:', e);
+  }
+}
+
+async function joinLeague(leagueId, leagueData, user) {
+  const members = leagueData.members || [];
+  const alreadyIn = members.find(m => m.email === user.email || m.uid === user.uid);
+  if (!alreadyIn && members.length < leagueData.teams) {
+    // Add as real member, update any existing invited entry
+    const updatedMembers = members.map(m =>
+      m.email === user.email
+        ? { ...m, uid: user.uid, name: user.displayName || user.email, status: 'member' }
+        : m
+    );
+    // If not found at all, add fresh
+    if (!updatedMembers.find(m => m.uid === user.uid)) {
+      updatedMembers.push({ email: user.email, name: user.displayName || user.email, uid: user.uid, status: 'member', joinedAt: new Date().toISOString() });
+    }
+    await updateDoc(doc(db, 'leagues', leagueId), { members: updatedMembers });
+    leagueData.members = updatedMembers;
+  }
+  leagueMap[leagueId] = leagueData;
+  openLeagueHome(leagueId, leagueData, user);
+}
+
+// ── LEAGUE HOME PAGE ─────────────────────────────────────
+function openLeagueHome(leagueId, leagueData, user) {
+  // Hide everything else
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('league-page').classList.remove('active');
+  document.getElementById('league-home').classList.add('active');
+
+  const members = leagueData.members || [];
+  const scoring = (leagueData.scoring || 'PPR').toUpperCase();
+  const draftDate = leagueData.draftDate ? new Date(leagueData.draftDate) : null;
+
+  // Hero
+  document.getElementById('lh-label').textContent = scoring + ' · ' + leagueData.teams + ' Teams';
+  document.getElementById('lh-title').textContent = leagueData.name;
+  document.getElementById('lh-sub').textContent = (leagueData.draftType || 'Snake') + ' draft · ' + (leagueData.roster || 15) + ' roster spots' + (leagueData.prize ? ' · $' + leagueData.prize + ' prize pool' : '');
+  document.getElementById('lh-stats').innerHTML =
+    '<div class="hero-stat"><div class="hero-stat-val">' + members.length + '</div><div class="hero-stat-label">Members</div></div>' +
+    '<div class="hero-stat"><div class="hero-stat-val">' + leagueData.teams + '</div><div class="hero-stat-label">Total teams</div></div>' +
+    (leagueData.prize ? '<div class="hero-stat"><div class="hero-stat-val">$' + leagueData.prize + '</div><div class="hero-stat-label">Prize pool</div></div>' : '') +
+    '<div class="hero-stat"><div class="hero-stat-val">' + scoring + '</div><div class="hero-stat-label">Scoring</div></div>';
+
+  // Join banner if not a member yet
+  const isMember = members.find(m => m.uid === user.uid);
+  const bannerEl = document.getElementById('lh-join-banner');
+  if (!isMember) {
+    bannerEl.innerHTML = '<div class="join-banner"><div><div class="join-banner-title">You have been invited!</div><div class="join-banner-text">You are viewing ' + leagueData.name + '. Click to officially join the league.</div></div><button class="btn-join-league" id="join-btn">Join League</button></div>';
+    document.getElementById('join-btn').addEventListener('click', async () => {
+      await joinLeague(leagueId, leagueData, user);
+    });
+  } else {
+    bannerEl.innerHTML = '';
+  }
+
+  // Standings
+  const colors = ['rgba(45,125,210,0.2)','rgba(34,197,94,0.15)','rgba(240,180,41,0.15)','rgba(239,68,68,0.15)','rgba(156,163,175,0.15)'];
+  const textColors = ['#60a5fa','#4ade80','var(--gold)','#f87171','var(--muted2)'];
+
+  if (!members.length) {
+    document.getElementById('lh-standings').innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">No members yet. Share the invite link!</div>';
+  } else {
+    let standHtml = '<table class="standings-card-table"><thead><tr><th>Team</th><th>W</th><th>L</th><th>Pts</th></tr></thead><tbody>';
+    members.forEach((m, i) => {
+      const isYou = m.uid === user.uid;
+      standHtml += '<tr>' +
+        '<td><span class="standing-rank">' + (i+1) + '</span><span class="standing-name">' + (m.name || m.email) + (isYou ? '<span class="standing-you">YOU</span>' : '') + '</span></td>' +
+        '<td class="standing-w">0</td>' +
+        '<td class="standing-l">0</td>' +
+        '<td class="standing-pts">0.0</td>' +
+        '</tr>';
+    });
+    standHtml += '</tbody></table>';
+    document.getElementById('lh-standings').innerHTML = standHtml;
+  }
+
+  // Rosters
+  const rostersEl = document.getElementById('lh-rosters');
+  if (!members.length) {
+    rostersEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Waiting for members to join.</div>';
+  } else {
+    rostersEl.innerHTML = '';
+    const positions = ['QB','RB','RB','WR','WR','TE','FLEX','K','BN','BN','BN','BN','BN','BN','BN'];
+    members.forEach((m, i) => {
+      const ci = i % colors.length;
+      const initials = (m.name || m.email || '?').slice(0,2).toUpperCase();
+      const isYou = m.uid === user.uid;
+      const card = document.createElement('div');
+      card.className = 'roster-member-card' + (isYou ? ';border-color:rgba(240,180,41,0.3)' : '');
+      if (isYou) card.style.borderColor = 'rgba(240,180,41,0.3)';
+      let slotsHtml = '<div class="roster-slots">';
+      positions.slice(0, leagueData.roster || 15).forEach(pos => {
+        slotsHtml += '<div class="roster-slot"><div class="roster-slot-pos">' + pos + '</div><div class="roster-slot-name">Empty</div></div>';
+      });
+      slotsHtml += '</div>';
+      card.innerHTML = '<div class="roster-member-header">' +
+        '<div class="roster-member-avatar" style="background:' + colors[ci] + ';color:' + textColors[ci] + '">' + initials + '</div>' +
+        '<div><div class="roster-member-name">' + (m.name || m.email) + (isYou ? ' <span class="standing-you">YOU</span>' : '') + '</div>' +
+        '<div class="roster-member-record">0-0 · 0.0 pts</div></div>' +
+        '</div>' + slotsHtml;
+      rostersEl.appendChild(card);
+    });
+  }
+
+  // Draft countdown
+  const cdWrap = document.getElementById('lh-draft-countdown-wrap');
+  if (draftDate && draftDate > new Date()) {
+    cdWrap.style.display = 'block';
+    document.getElementById('lh-draft-date').textContent = draftDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ' at ' + draftDate.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    if (leagueHomeCountdownInterval) clearInterval(leagueHomeCountdownInterval);
+    leagueHomeCountdownInterval = setInterval(() => {
+      const diff = draftDate - new Date();
+      if (diff <= 0) { clearInterval(leagueHomeCountdownInterval); document.getElementById('lh-countdown').textContent = 'Starting!'; return; }
+      const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+      const el = document.getElementById('lh-countdown');
+      if (el) el.textContent = d + 'd ' + h + 'h ' + m + 'm ' + s + 's';
+    }, 1000);
+  } else {
+    cdWrap.style.display = draftDate ? 'none' : 'none';
+    if (!draftDate) cdWrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No draft scheduled yet.</div>';
+  }
+
+  // League info
+  document.getElementById('lh-info').innerHTML =
+    '<div class="draft-detail-row"><span class="draft-detail-label">Scoring</span><span class="draft-detail-val">' + scoring + '</span></div>' +
+    '<div class="draft-detail-row"><span class="draft-detail-label">Teams</span><span class="draft-detail-val">' + leagueData.teams + '</span></div>' +
+    '<div class="draft-detail-row"><span class="draft-detail-label">Roster size</span><span class="draft-detail-val">' + (leagueData.roster||15) + '</span></div>' +
+    '<div class="draft-detail-row"><span class="draft-detail-label">Draft type</span><span class="draft-detail-val">' + (leagueData.draftType||'Snake') + '</span></div>' +
+    '<div class="draft-detail-row"><span class="draft-detail-label">Secs / pick</span><span class="draft-detail-val">' + (leagueData.draftSeconds||90) + 's</span></div>' +
+    '<div class="draft-detail-row"><span class="draft-detail-label">Commissioner</span><span class="draft-detail-val" style="font-size:12px;">' + (leagueData.ownerName||'--') + '</span></div>';
+}
+
+window.closeLeagueHome = () => {
+  document.getElementById('league-home').classList.remove('active');
+  if (leagueHomeCountdownInterval) { clearInterval(leagueHomeCountdownInterval); leagueHomeCountdownInterval = null; }
+  document.getElementById('fantasy').classList.add('active');
+  document.querySelectorAll('.nav-tab')[0].classList.add('active');
+};
 
 setInterval(loadGames, 60000);
 </script>
