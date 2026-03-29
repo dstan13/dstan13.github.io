@@ -1357,7 +1357,10 @@ function openTeamHome(leagueId, leagueData, user) {
   const myMember = members.find(m => m.uid === user.uid);
   const myName = myMember ? (myMember.name || myMember.email) : (user.displayName || user.email);
   const draftDate = leagueData.draftDate ? new Date(leagueData.draftDate) : null;
-  const draftDone = draftDate && draftDate < new Date();
+  // draftDone = draft is fully complete (all picks made), checked via RTDB
+  // draftStarted = scheduled time has passed but may not be complete yet
+  const draftStarted = draftDate && draftDate <= new Date();
+  const draftDone = false; // will be updated async below
 
   // Hero
   document.getElementById('th-league-label').textContent = leagueData.name;
@@ -1366,52 +1369,41 @@ function openTeamHome(leagueId, leagueData, user) {
   document.getElementById('th-week-pts').textContent = '0.0';
   document.getElementById('th-week-sub').textContent = 'Season record: 0-0';
 
-  // Roster title
-  document.getElementById('th-roster-title').textContent = draftDone ? 'My Roster' : 'My Roster — Draft pending';
-
-  // Roster slots - load from Firestore
-  const positions = ['QB','RB','RB','WR','WR','TE','FLEX','K','BN','BN','BN','BN','BN','BN','BN'];
-  const rosterSize = leagueData.roster || 15;
+  // Roster - check RTDB then load accordingly
   const rosterEl = document.getElementById('th-roster');
   rosterEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Loading roster...</div>';
-  const posColors = {QB:'pos-qb',RB:'pos-rb',WR:'pos-wr',TE:'pos-te',FLEX:'pos-wr',K:'pos-k',BN:'pos-k'};
+  document.getElementById('th-roster-title').textContent = 'My Roster';
 
-  // Load roster from Firestore
-  (async () => {
-    let draftedPlayers = [];
-    if (draftDone) {
-      try {
-        const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-        const rosterRef = doc(db, 'leagues', leagueId, 'rosters', user.uid);
-        const rosterSnap = await getDoc(rosterRef);
-        if (rosterSnap.exists()) {
-          draftedPlayers = (rosterSnap.data().players || []).sort((a,b) => a.pickNum - b.pickNum);
-        }
-      } catch(e) {
-        console.error('Roster load error:', e);
-      }
+  // Check draft status from RTDB
+  get(ref(rtdb, 'drafts/' + leagueId)).then(snap => {
+    const draftData = snap.exists() ? snap.val() : null;
+    const isDraftComplete = draftData?.status === 'complete';
+    document.getElementById('th-roster-title').textContent = isDraftComplete ? 'My Roster' : 'My Roster — Draft pending';
+    if (isDraftComplete) {
+      loadRealRoster(leagueId, user, leagueData);
+    } else {
+      renderEmptyRoster(leagueData);
     }
-    rosterEl.innerHTML = '';
-    positions.slice(0, rosterSize).forEach((pos, i) => {
-      const player = draftedPlayers[i];
-      const row = document.createElement('div');
-      row.className = 'team-pos-row' + (player ? '' : ' empty-slot');
-      row.innerHTML = '<span class="team-pos-badge pos-badge ' + (posColors[pos]||'pos-k') + '">' + pos + '</span>' +
-        '<span class="team-player-name">' + (player ? player.name : 'Empty') + '</span>' +
-        (player ? '<span class="team-player-meta">' + player.team + ' · ' + player.pos + '</span>' : '') +
-        (player ? '<span class="team-player-pts">' + player.proj + '</span>' : '');
-      rosterEl.appendChild(row);
-    });
-  })();
+  }).catch(() => renderEmptyRoster(leagueData));
 
   // Draft countdown in sidebar
   const cdWrap = document.getElementById('th-countdown-wrap');
   const draftBtnWrap = document.getElementById('th-draft-room-btn-wrap');
-  if (draftBtnWrap) {
-    const now2 = new Date();
-    const draftStarted = draftDate && draftDate <= now2;
-    const showDraftBtn = draftStarted && !draftDone;
-    draftBtnWrap.style.display = showDraftBtn ? 'block' : 'none';
+  // Check RTDB to see if draft is active or complete
+  if (draftBtnWrap && draftStarted) {
+    get(ref(rtdb, 'drafts/' + leagueId)).then(snap => {
+      const draftData = snap.exists() ? snap.val() : null;
+      const isDraftComplete = draftData?.status === 'complete';
+      const isDraftActive = draftData?.status === 'active' || (draftStarted && !isDraftComplete);
+      draftBtnWrap.style.display = isDraftActive ? 'block' : 'none';
+      // If draft is complete, reload roster with real players
+      if (isDraftComplete) loadRealRoster(leagueId, user, leagueData);
+    }).catch(() => {
+      // If no RTDB data yet but time has passed, show button (commissioner will init)
+      draftBtnWrap.style.display = draftStarted ? 'block' : 'none';
+    });
+  } else if (draftBtnWrap) {
+    draftBtnWrap.style.display = 'none';
   }
   if (draftDate && !draftDone) {
     cdWrap.style.display = 'block';
@@ -1447,6 +1439,53 @@ function openTeamHome(leagueId, leagueData, user) {
     });
     standEl.innerHTML = html;
   }
+}
+
+
+async function loadRealRoster(leagueId, user, leagueData) {
+  const rosterEl = document.getElementById('th-roster');
+  if (!rosterEl) return;
+  const posColors = {QB:'pos-qb',RB:'pos-rb',WR:'pos-wr',TE:'pos-te',FLEX:'pos-wr',K:'pos-k',BN:'pos-k'};
+  const positions = ['QB','RB','RB','WR','WR','TE','FLEX','K','BN','BN','BN','BN','BN','BN','BN'];
+  const rosterSize = leagueData?.roster || 15;
+  try {
+    const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const rosterRef = doc(db, 'leagues', leagueId, 'rosters', user.uid);
+    const rosterSnap = await getDoc(rosterRef);
+    const draftedPlayers = rosterSnap.exists()
+      ? (rosterSnap.data().players || []).sort((a,b) => a.pickNum - b.pickNum)
+      : [];
+    rosterEl.innerHTML = '';
+    positions.slice(0, rosterSize).forEach((pos, i) => {
+      const player = draftedPlayers[i];
+      const row = document.createElement('div');
+      row.className = 'team-pos-row' + (player ? '' : ' empty-slot');
+      row.innerHTML = '<span class="team-pos-badge pos-badge ' + (posColors[pos]||'pos-k') + '">' + pos + '</span>' +
+        '<span class="team-player-name">' + (player ? player.name : 'Empty') + '</span>' +
+        (player ? '<span class="team-player-meta">' + player.team + ' · ' + player.pos + '</span>' : '') +
+        (player ? '<span class="team-player-pts">' + player.proj + '</span>' : '');
+      rosterEl.appendChild(row);
+    });
+  } catch(e) {
+    console.error('Roster load error:', e);
+    renderEmptyRoster(leagueData);
+  }
+}
+
+function renderEmptyRoster(leagueData) {
+  const rosterEl = document.getElementById('th-roster');
+  if (!rosterEl) return;
+  const posColors = {QB:'pos-qb',RB:'pos-rb',WR:'pos-wr',TE:'pos-te',FLEX:'pos-wr',K:'pos-k',BN:'pos-k'};
+  const positions = ['QB','RB','RB','WR','WR','TE','FLEX','K','BN','BN','BN','BN','BN','BN','BN'];
+  const rosterSize = leagueData?.roster || 15;
+  rosterEl.innerHTML = '';
+  positions.slice(0, rosterSize).forEach(pos => {
+    const row = document.createElement('div');
+    row.className = 'team-pos-row empty-slot';
+    row.innerHTML = '<span class="team-pos-badge pos-badge ' + (posColors[pos]||'pos-k') + '">' + pos + '</span>' +
+      '<span class="team-player-name">Empty</span>';
+    rosterEl.appendChild(row);
+  });
 }
 
 window.closeTeamHome = () => {
